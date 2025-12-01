@@ -1,10 +1,6 @@
 ﻿#include <stdio.h>
-#include "tests.h"
+#include "test_common.h"
 #include "../../include/json.h"
-
-static void reset_test_counter() {
-    count = 1;
-}
 
 void test_basic_types() {
     printf("=== Basic Types Test ===\n");

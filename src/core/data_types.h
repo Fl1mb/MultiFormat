@@ -55,4 +55,18 @@ typedef struct free_stack_node {
     struct free_stack_node* next;
 }free_stack_node_t;
 
+
+typedef struct {
+    char** fields;
+    int count;
+}CSVRows;
+
+typedef struct {
+    CSVRows* rows;
+    int row_count;
+    int max_fields;
+    CSVRows header;
+    int have_header;
+}CSVData;
+
 #endif // DATA_TYPES_H_

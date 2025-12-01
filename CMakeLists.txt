@@ -8,14 +8,16 @@ set(CMAKE_C_EXTENSIONS OFF)
 option(BUILD_TESTS "Build tests" ON)
 
 set(MULTIFORMAT_SOURCES
-    include/json.c    
+    include/json.c  
+    include/csv.c
 
     src/json/json_parser.c
     src/json/json_serializer.c
 
+    src/csv/csv_parser.c
 )
 
-add_library(multiformat ${MULTIFORMAT_SOURCES}  "src/json/json_parser.h" "src/json/json_serializer.h")
+add_library(multiformat ${MULTIFORMAT_SOURCES})
 
 target_include_directories(multiformat 
     PUBLIC 
