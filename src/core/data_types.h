@@ -69,4 +69,40 @@ typedef struct {
     int have_header;
 }CSVData;
 
+typedef struct XMLAttribute {
+    char* name;
+    char* value;
+    struct XMLAttribute* next;
+}XMLAttribute;
+
+typedef struct XMLNode {
+    char* name;
+    char* content;
+    XMLAttribute* attributes;
+    struct XMLNode* parent;
+    struct XMLNode* child;
+    struct XMLNode* next;
+}XMLNode;
+
+typedef struct {
+    XMLNode* root;
+    int error;
+    char* error_message;
+    int line;
+    int column;
+}XMLDocument;
+
+typedef enum{
+    XML_NODE_ELEMENT,
+    XML_NODE_TEXT,
+    XML_NODE_COMMENT,
+    XML_NODE_CDATA,
+    XML_NODE_UNKNOWN
+} XMLNodeType;
+
+typedef struct {
+    const char* content;
+    size_t content_len;
+} NodeContentInfo;
+
 #endif // DATA_TYPES_H_

@@ -10,11 +10,16 @@ option(BUILD_TESTS "Build tests" ON)
 set(MULTIFORMAT_SOURCES
     include/json.c  
     include/csv.c
+    include/xml.c
 
     src/json/json_parser.c
     src/json/json_serializer.c
 
     src/csv/csv_parser.c
+    
+    src/xml/xml_parser.c
+    src/xml/xml_help.c
+    src/xml/xml_serializer.c
 )
 
 add_library(multiformat ${MULTIFORMAT_SOURCES})
