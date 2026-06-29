@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.16)
 
 include(CTest)
 
@@ -16,6 +16,9 @@ add_executable(csv_tests
 # Link libraries
 target_link_libraries(json_tests multiformat)
 target_link_libraries(csv_tests multiformat)
+
+target_compile_definitions(json_tests PRIVATE _POSIX_C_SOURCE=200809L)
+target_compile_definitions(csv_tests PRIVATE _POSIX_C_SOURCE=200809L)
 
 # Include directories for json_tests
 target_include_directories(json_tests 

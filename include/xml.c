@@ -1,4 +1,6 @@
 #include "xml.h"
+#include <stdlib.h>
+#include <string.h>
 
 XMLDocument* xml_parse(const char* xml_str){
     if(!xml_str){

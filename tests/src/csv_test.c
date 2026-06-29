@@ -1,6 +1,8 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include "test_common.h"
 #include "../../include/csv.h"
 
 extern int count;

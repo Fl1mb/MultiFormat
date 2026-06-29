@@ -1,4 +1,4 @@
-﻿#include "json.h"
+#include "json.h"
 #include "../src/json/json_parser.h"
 #include "../src/json/json_serializer.h"
 
@@ -291,4 +291,80 @@ json_value_t* json_get_value(const json_value_t* value, size_t index){
 	if(index >= value->data.object.count) return NULL;
 
 	return value->data.object.entries[index].value;
+}
+
+// ============================
+// JSON CREATION FUNCTIONS
+// ============================
+
+json_value_t* json_null_create(void)
+{
+	return create_value(JSON_NULL);
+}
+
+json_value_t* json_bool_create(int value)
+{
+	json_value_t* v = create_value(JSON_BOOL);
+	if (v) v->data.boolean = value;
+	return v;
+}
+
+json_value_t* json_number_create(double value)
+{
+	json_value_t* v = create_value(JSON_NUMBER);
+	if (v) v->data.number = value;
+	return v;
+}
+
+json_value_t* json_string_create(const char* value)
+{
+	json_value_t* v = create_value(JSON_STRING);
+	if (v && value) {
+		v->data.string = strdup(value);
+	}
+	return v;
+}
+
+json_value_t* json_array_create(void)
+{
+	return create_value(JSON_ARRAY);
+}
+
+json_value_t* json_object_create(void)
+{
+	return create_value(JSON_OBJECT);
+}
+
+int json_array_add(json_value_t* array, json_value_t* value)
+{
+	if (!array || array->type != JSON_ARRAY || !value) return 0;
+
+	if (array->data.array.count >= array->data.array.capacity) {
+		size_t new_cap = array->data.array.capacity == 0 ? 8 : array->data.array.capacity * 2;
+		json_value_t** new_values = realloc(array->data.array.values, new_cap * sizeof(json_value_t*));
+		if (!new_values) return 0;
+		array->data.array.values = new_values;
+		array->data.array.capacity = new_cap;
+	}
+
+	array->data.array.values[array->data.array.count++] = value;
+	return 1;
+}
+
+int json_object_add(json_value_t* object, const char* key, json_value_t* value)
+{
+	if (!object || object->type != JSON_OBJECT || !key || !value) return 0;
+
+	if (object->data.object.count >= object->data.object.capacity) {
+		size_t new_cap = object->data.object.capacity == 0 ? 8 : object->data.object.capacity * 2;
+		struct json_object_entry* new_entries = realloc(object->data.object.entries, new_cap * sizeof(struct json_object_entry));
+		if (!new_entries) return 0;
+		object->data.object.entries = new_entries;
+		object->data.object.capacity = new_cap;
+	}
+
+	object->data.object.entries[object->data.object.count].key = strdup(key);
+	object->data.object.entries[object->data.object.count].value = value;
+	object->data.object.count++;
+	return 1;
 }

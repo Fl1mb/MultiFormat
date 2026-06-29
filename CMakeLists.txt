@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.16)
 project(multiformat VERSION 0.1.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
@@ -24,8 +24,10 @@ set(MULTIFORMAT_SOURCES
 
 add_library(multiformat ${MULTIFORMAT_SOURCES})
 
-target_include_directories(multiformat 
-    PUBLIC 
+target_compile_definitions(multiformat PRIVATE _POSIX_C_SOURCE=200809L)
+
+target_include_directories(multiformat
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )

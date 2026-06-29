@@ -1,4 +1,6 @@
 #include "xml_help.h"
+#include <stdlib.h>
+#include <string.h>
 
 static XMLAttribute* xml_attribute_create(const char* name, const char* value)
 {

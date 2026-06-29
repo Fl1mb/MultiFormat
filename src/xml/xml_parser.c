@@ -1,4 +1,7 @@
 #include "xml_parser.h"
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 static void xml_skip_whitespaces(XMLParserContext* ctx)
 {

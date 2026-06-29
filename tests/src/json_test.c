@@ -1,4 +1,6 @@
-﻿#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "test_common.h"
 #include "../../include/json.h"
 
@@ -653,6 +655,311 @@ void test_object_with_many_keys() {
     printf("✓ Object With Many Keys Test: %s\n\n", passed ? "PASSED" : "FAILED");
 }
 
+void test_json_creation() {
+    printf("=== JSON Creation Test ===\n");
+    reset_test_counter();
+
+    int passed = 1;
+
+    // Test 1: Create string
+    printf("Test 1: Create string\n");
+    json_value_t* str = json_string_create("hello");
+    passed &= (assertNotNull(str) == 0);
+    if (str) {
+        passed &= (assertEquals(json_get_type(str), JSON_STRING) == 0);
+        passed &= (assertStringsMatch((char*)json_get_string(str), "hello") == 0);
+        json_free(str);
+    }
+
+    // Test 2: Create number
+    printf("Test 2: Create number\n");
+    json_value_t* num = json_number_create(42.5);
+    passed &= (assertNotNull(num) == 0);
+    if (num) {
+        passed &= (assertEquals(json_get_type(num), JSON_NUMBER) == 0);
+        passed &= (assertDoubleEquals(json_get_number(num), 42.5) == 0);
+        json_free(num);
+    }
+
+    // Test 3: Create boolean true
+    printf("Test 3: Create boolean true\n");
+    json_value_t* btrue = json_bool_create(1);
+    passed &= (assertNotNull(btrue) == 0);
+    if (btrue) {
+        passed &= (assertEquals(json_get_type(btrue), JSON_BOOL) == 0);
+        passed &= (assertEquals(json_get_boolean(btrue), 1) == 0);
+        json_free(btrue);
+    }
+
+    // Test 4: Create boolean false
+    printf("Test 4: Create boolean false\n");
+    json_value_t* bfalse = json_bool_create(0);
+    passed &= (assertNotNull(bfalse) == 0);
+    if (bfalse) {
+        passed &= (assertEquals(json_get_type(bfalse), JSON_BOOL) == 0);
+        passed &= (assertEquals(json_get_boolean(bfalse), 0) == 0);
+        json_free(bfalse);
+    }
+
+    printf("✓ JSON Creation Test: %s\n\n", passed ? "PASSED" : "FAILED");
+}
+
+void test_json_array_create_add() {
+    printf("=== JSON Array Create & Add Test ===\n");
+    reset_test_counter();
+
+    int passed = 1;
+
+    // Test 1: Create empty array
+    printf("Test 1: Create empty array\n");
+    json_value_t* arr = json_array_create();
+    passed &= (assertNotNull(arr) == 0);
+    if (arr) {
+        passed &= (assertEquals(json_get_type(arr), JSON_ARRAY) == 0);
+        passed &= (assertEquals(json_get_array_size(arr), 0) == 0);
+    }
+
+    // Test 2: Add elements to array
+    printf("Test 2: Add elements to array\n");
+    if (arr) {
+        passed &= (assertEquals(json_array_add(arr, json_number_create(1.0)), 1) == 0);
+        passed &= (assertEquals(json_array_add(arr, json_number_create(2.0)), 1) == 0);
+        passed &= (assertEquals(json_array_add(arr, json_string_create("three")), 1) == 0);
+        passed &= (assertEquals(json_array_add(arr, json_bool_create(1)), 1) == 0);
+        passed &= (assertEquals(json_array_add(arr, json_null_create()), 1) == 0);
+        passed &= (assertEquals(json_get_array_size(arr), 5) == 0);
+    }
+
+    // Test 3: Access array elements
+    printf("Test 3: Access array elements\n");
+    if (arr) {
+        json_value_t* e0 = json_array_get(arr, 0);
+        json_value_t* e2 = json_array_get(arr, 2);
+        json_value_t* e4 = json_array_get(arr, 4);
+
+        passed &= (assertNotNull(e0) == 0);
+        passed &= (assertNotNull(e2) == 0);
+        passed &= (assertNotNull(e4) == 0);
+
+        if (e0) passed &= (assertDoubleEquals(json_get_number(e0), 1.0) == 0);
+        if (e2) passed &= (assertStringsMatch((char*)json_get_string(e2), "three") == 0);
+        if (e4) passed &= (assertEquals(json_get_type(e4), JSON_NULL) == 0);
+
+        json_free(arr);
+    }
+
+    // Test 4: Add to invalid type fails
+    printf("Test 4: Add to non-array fails\n");
+    json_value_t* obj = json_object_create();
+    passed &= (assertEquals(json_array_add(obj, json_number_create(1.0)), 0) == 0);
+    json_free(obj);
+
+    // Test 5: NULL inputs fail
+    printf("Test 5: NULL inputs fail\n");
+    passed &= (assertEquals(json_array_add(NULL, json_number_create(1.0)), 0) == 0);
+    passed &= (assertEquals(json_array_add(arr, NULL), 0) == 0);
+
+    printf("✓ JSON Array Create & Add Test: %s\n\n", passed ? "PASSED" : "FAILED");
+}
+
+void test_json_object_create_add() {
+    printf("=== JSON Object Create & Add Test ===\n");
+    reset_test_counter();
+
+    int passed = 1;
+
+    // Test 1: Create empty object
+    printf("Test 1: Create empty object\n");
+    json_value_t* obj = json_object_create();
+    passed &= (assertNotNull(obj) == 0);
+    if (obj) {
+        passed &= (assertEquals(json_get_type(obj), JSON_OBJECT) == 0);
+        passed &= (assertEquals(json_object_size(obj), 0) == 0);
+    }
+
+    // Test 2: Add key-value pairs
+    printf("Test 2: Add key-value pairs\n");
+    if (obj) {
+        passed &= (assertEquals(json_object_add(obj, "name", json_string_create("John")), 1) == 0);
+        passed &= (assertEquals(json_object_add(obj, "age", json_number_create(30)), 1) == 0);
+        passed &= (assertEquals(json_object_add(obj, "active", json_bool_create(1)), 1) == 0);
+        passed &= (assertEquals(json_object_size(obj), 3) == 0);
+    }
+
+    // Test 3: Access values by key
+    printf("Test 3: Access values by key\n");
+    if (obj) {
+        json_value_t* name = json_object_get(obj, "name");
+        json_value_t* age = json_object_get(obj, "age");
+        json_value_t* active = json_object_get(obj, "active");
+        json_value_t* missing = json_object_get(obj, "missing");
+
+        passed &= (assertNotNull(name) == 0);
+        passed &= (assertNotNull(age) == 0);
+        passed &= (assertNotNull(active) == 0);
+        passed &= (assertNull(missing) == 0);
+
+        if (name) passed &= (assertStringsMatch((char*)json_get_string(name), "John") == 0);
+        if (age) passed &= (assertDoubleEquals(json_get_number(age), 30.0) == 0);
+        if (active) passed &= (assertEquals(json_get_boolean(active), 1) == 0);
+    }
+
+    // Test 4: Iterate keys
+    printf("Test 4: Iterate keys by index\n");
+    if (obj) {
+        int found_name = 0, found_age = 0, found_active = 0;
+        for (size_t i = 0; i < json_object_size(obj); i++) {
+            const char* key = json_object_get_key(obj, i);
+            if (strcmp(key, "name") == 0) found_name = 1;
+            if (strcmp(key, "age") == 0) found_age = 1;
+            if (strcmp(key, "active") == 0) found_active = 1;
+        }
+        passed &= (assertTrue(found_name) == 0);
+        passed &= (assertTrue(found_age) == 0);
+        passed &= (assertTrue(found_active) == 0);
+
+        json_free(obj);
+    }
+
+    // Test 5: Add to non-object fails
+    printf("Test 5: Add to non-object fails\n");
+    json_value_t* arr = json_array_create();
+    passed &= (assertEquals(json_object_add(arr, "key", json_number_create(1.0)), 0) == 0);
+    json_free(arr);
+
+    // Test 6: NULL inputs fail
+    printf("Test 6: NULL inputs fail\n");
+    passed &= (assertEquals(json_object_add(NULL, "key", json_number_create(1.0)), 0) == 0);
+
+    printf("✓ JSON Object Create & Add Test: %s\n\n", passed ? "PASSED" : "FAILED");
+}
+
+void test_json_create_serialize_roundtrip() {
+    printf("=== JSON Create & Serialize Roundtrip Test ===\n");
+    reset_test_counter();
+
+    int passed = 1;
+
+    // Build object: {"x": 10, "y": "hello", "z": true}
+    printf("Test 1: Build object, serialize, parse back\n");
+    json_value_t* obj = json_object_create();
+    json_object_add(obj, "x", json_number_create(10));
+    json_object_add(obj, "y", json_string_create("hello"));
+    json_object_add(obj, "z", json_bool_create(1));
+
+    char* json_str = json_serialize(obj);
+    passed &= (assertNotNull(json_str) == 0);
+
+    if (json_str) {
+        json_value_t* parsed = json_parse(json_str);
+        passed &= (assertNotNull(parsed) == 0);
+
+        if (parsed) {
+            passed &= (assertEquals(json_get_type(parsed), JSON_OBJECT) == 0);
+            passed &= (assertEquals(json_object_size(parsed), 3) == 0);
+
+            json_value_t* px = json_object_get(parsed, "x");
+            json_value_t* py = json_object_get(parsed, "y");
+            json_value_t* pz = json_object_get(parsed, "z");
+
+            if (px) passed &= (assertDoubleEquals(json_get_number(px), 10.0) == 0);
+            if (py) passed &= (assertStringsMatch((char*)json_get_string(py), "hello") == 0);
+            if (pz) passed &= (assertEquals(json_get_boolean(pz), 1) == 0);
+
+            json_free(parsed);
+        }
+        free(json_str);
+    }
+
+    // Test 2: Nested structure roundtrip
+    printf("Test 2: Nested array roundtrip\n");
+    json_value_t* arr = json_array_create();
+    json_array_add(arr, json_number_create(1));
+    json_array_add(arr, json_string_create("two"));
+    json_array_add(arr, json_bool_create(0));
+    json_array_add(arr, json_null_create());
+
+    char* arr_str = json_serialize(arr);
+    passed &= (assertNotNull(arr_str) == 0);
+
+    if (arr_str) {
+        json_value_t* parsed_arr = json_parse(arr_str);
+        passed &= (assertNotNull(parsed_arr) == 0);
+
+        if (parsed_arr) {
+            passed &= (assertEquals(json_get_array_size(parsed_arr), 4) == 0);
+            passed &= (assertDoubleEquals(json_get_number(json_array_get(parsed_arr, 0)), 1.0) == 0);
+            passed &= (assertStringsMatch((char*)json_get_string(json_array_get(parsed_arr, 1)), "two") == 0);
+            passed &= (assertEquals(json_get_boolean(json_array_get(parsed_arr, 2)), 0) == 0);
+            passed &= (assertEquals(json_get_type(json_array_get(parsed_arr, 3)), JSON_NULL) == 0);
+
+            json_free(parsed_arr);
+        }
+        free(arr_str);
+    }
+
+    // Test 3: Pretty print roundtrip
+    printf("Test 3: Pretty print roundtrip\n");
+    char* pretty = json_serialize_pretty(obj);
+    passed &= (assertNotNull(pretty) == 0);
+
+    if (pretty) {
+        json_value_t* parsed_pretty = json_parse(pretty);
+        passed &= (assertNotNull(parsed_pretty) == 0);
+        if (parsed_pretty) {
+            passed &= (assertEquals(json_object_size(parsed_pretty), 3) == 0);
+            json_free(parsed_pretty);
+        }
+        free(pretty);
+    }
+
+    json_free(obj);
+    json_free(arr);
+
+    printf("✓ JSON Create & Serialize Roundtrip Test: %s\n\n", passed ? "PASSED" : "FAILED");
+}
+
+void test_json_create_null() {
+    printf("=== JSON Create Null Test ===\n");
+    reset_test_counter();
+
+    int passed = 1;
+
+    printf("Test 1: Create null\n");
+    json_value_t* n = json_null_create();
+    passed &= (assertNotNull(n) == 0);
+    if (n) {
+        passed &= (assertEquals(json_get_type(n), JSON_NULL) == 0);
+
+        char* str = json_serialize(n);
+        passed &= (assertNotNull(str) == 0);
+        if (str) {
+            passed &= (assertStringsMatch(str, "null") == 0);
+            free(str);
+        }
+        json_free(n);
+    }
+
+    printf("Test 2: Null in object roundtrip\n");
+    json_value_t* obj = json_object_create();
+    json_object_add(obj, "key", json_null_create());
+    char* obj_str = json_serialize(obj);
+    passed &= (assertNotNull(obj_str) == 0);
+    if (obj_str) {
+        json_value_t* parsed = json_parse(obj_str);
+        if (parsed) {
+            json_value_t* val = json_object_get(parsed, "key");
+            passed &= (assertNotNull(val) == 0);
+            if (val) passed &= (assertEquals(json_get_type(val), JSON_NULL) == 0);
+            json_free(parsed);
+        }
+        free(obj_str);
+    }
+    json_free(obj);
+
+    printf("✓ JSON Create Null Test: %s\n\n", passed ? "PASSED" : "FAILED");
+}
+
 int main() {
     printf("Starting Comprehensive JSON Tests\n\n");
     
@@ -666,6 +973,11 @@ int main() {
 	test_large_array_performance();
 	test_object_with_many_keys();
 	test_complex_serialization_roundtrip();
+    test_json_creation();
+    test_json_array_create_add();
+    test_json_object_create_add();
+    test_json_create_serialize_roundtrip();
+    test_json_create_null();
     
     printf("=== All Tests Completed ===\n");
     return 0;

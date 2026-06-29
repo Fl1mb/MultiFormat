@@ -1,4 +1,5 @@
 ﻿#include "json_parser.h"
+#include "../../include/json.h"
 
 void skip_whitespace(json_parser_t* parser) {
 	while (parser->pos < parser->len && isspace(parser->json[parser->pos])) {

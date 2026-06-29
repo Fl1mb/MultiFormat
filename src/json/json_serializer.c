@@ -1,4 +1,4 @@
-﻿#include "json_serializer.h"
+#include "json_serializer.h"
 
 
 void serializer_init(json_serializer_t* serializer, int pretty)
@@ -179,7 +179,7 @@ int serialize_boolean(json_serializer_t* serializer, const json_value_t* value)
 
 int serialize_number(json_serializer_t* serializer, const json_value_t* value)
 {
-	char* buffer[64];
+	char buffer[64];
 
 	double num = value->data.number;
 	if (num == (long long)num) {

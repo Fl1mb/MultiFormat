@@ -1,4 +1,7 @@
 #include "xml_serializer.h"
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 static void xml_serializer_init(XMLSerializerContext* ctx, int indent_size) {
     if (!ctx) return;

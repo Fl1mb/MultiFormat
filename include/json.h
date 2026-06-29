@@ -1,4 +1,4 @@
-﻿#ifndef MULTIFORMAT_JSON_H
+#ifndef MULTIFORMAT_JSON_H
 #define MULTIFORMAT_JSON_H
 
 #include <stddef.h>
@@ -358,6 +358,20 @@ extern "C" {
      * @endcode
      */
     json_value_t* json_object_get(const json_value_t* value, const char* key);
+
+    // ============================
+    // JSON CREATION FUNCTIONS
+    // ============================
+
+    json_value_t* json_null_create(void);
+    json_value_t* json_bool_create(int value);
+    json_value_t* json_number_create(double value);
+    json_value_t* json_string_create(const char* value);
+    json_value_t* json_array_create(void);
+    json_value_t* json_object_create(void);
+
+    int json_array_add(json_value_t* array, json_value_t* value);
+    int json_object_add(json_value_t* object, const char* key, json_value_t* value);
 
 #ifdef __cplusplus
 }
